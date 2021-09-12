@@ -13,4 +13,4 @@ print: print.c header.h
 	gcc -Wall -o print print.c header.c
 
 clean:
-	rm -f create change load query print *~ core
+	rm -f create change load query print clean_output.txt *~ core
