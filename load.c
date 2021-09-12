@@ -38,10 +38,10 @@ int main(int argc, char *argv[]) {
         *read_count = 0;
 
         while (!feof(f)) {
-            fgets(student->Name, 30, f);
-            fgets(student->StuID, 9, f);
-            fgets(student->Address, 50, f);
-            fgets(student->Phone, 10, f);
+            fgets(student->Name, 60, f);
+            fgets(student->StuID, 18, f);
+            fgets(student->Address, 100, f);
+            fgets(student->Phone, 20, f);
             printf("Loaded: %s\n", student->Name);
             student++;
         }
