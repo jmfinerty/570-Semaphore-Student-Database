@@ -43,7 +43,7 @@ int main(int argc, char *argv[]) {
     Signal(semaset, 1);
 
     int num_records_found = 0;
-    for (int i=0; i<10; i++) { // TODO, figure out how to do this
+    while (1) {
         if (strcmp(query, student->StuID) == 0) {
             printf("Name:       %s\n", student->Name);
             printf("Student ID: %s\n", student->StuID);
@@ -52,13 +52,14 @@ int main(int argc, char *argv[]) {
             num_records_found++;
         }
         student++;
+        if ((int)strlen(student->Name) == 0)
+            break;
     }
 
     if (num_records_found == 0) {
         printf("No student with this ID found in the database.\n");
     }
 
-    sleep(2);
     Wait(semaset, 1);
     *read_count -= 1;
     if (*read_count == 0) {

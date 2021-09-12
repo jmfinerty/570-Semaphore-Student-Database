@@ -40,13 +40,17 @@ int main(int argc, char *argv[]) {
     }
     Signal(semaset, 1);
 
-    for (int i=0; i<11; i++) { // TODO: figure out how to do this
+    while (1) {
         printf("Name:       %s\n", student->Name);
         printf("Student ID: %s\n", student->StuID);
         printf("Address:    %s\n", student->Address);
         printf("Phone:      %s\n", student->Phone);
-        printf("--------------------------------------------------\n");
         student++;
+        if ((int)strlen(student->Name) != 0) {
+            printf("--------------------------------------------------\n");
+        } else {
+            break;
+        }
     }
 
     Wait(semaset, 1);

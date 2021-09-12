@@ -32,7 +32,9 @@ int main(int argc, char *argv[]) {
 
     FILE* f = fopen("clean_output.txt", "w");
     if (f) {
-        for (int i=0; i<11; i++) { // TODO: figure out how to do this
+        while (1) {
+            if ((int)strlen(student->Name) == 0)
+                break;
             fputs(student->Name, f);
             fputs(student->StuID, f);
             fputs(student->Address, f);
