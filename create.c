@@ -16,7 +16,7 @@ int main() {
 	struct StudentInfo *infoptr;
 	int sema_set;
 
-	id = shmget(KEY, SEGSIZE, IPC_CREAT|0666); // get shared memory to store data
+	id = shmget(KEYSTU, SEGSIZESTU, IPC_CREAT|0666); // get shared memory to store data
 	if (id < 0) {
     perror("Create: shmget failed");
 		exit(1);

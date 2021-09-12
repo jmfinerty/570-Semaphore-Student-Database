@@ -26,7 +26,7 @@ int main(int argc, char* argv[]) {
 	// get the id of the shared memory segment with key "KEY"
 	// note that this is the segment, created in the program "create",
 	// where the data is stored
-	id = shmget(KEY,SEGSIZE, 0);
+	id = shmget(KEYSTU, SEGSIZESTU, 0);
 	if (id < 0) {
 		perror("Change: shmget failed 1");
 		exit(1);
