@@ -41,16 +41,15 @@ int main(int argc, char *argv[]) {
     Signal(semaset, 1);
 
     while (1) {
+        if ((int)strlen(student->Name) == 0)
+            break;
         printf("Name:       %s\n", student->Name);
         printf("Student ID: %s\n", student->StuID);
         printf("Address:    %s\n", student->Address);
         printf("Phone:      %s\n", student->Phone);
         student++;
-        if ((int)strlen(student->Name) != 0) {
+        if ((int)strlen(student->Name) != 0)
             printf("--------------------------------------------------\n");
-        } else {
-            break;
-        }
     }
 
     Wait(semaset, 1);
