@@ -26,7 +26,7 @@ int main(int argc, char* argv[]) {
 	// get the id of the shared memory segment with key "KEY"
 	// note that this is the segment, created in the program "create",
 	// where the data is stored
-	id = shmget(KEYSTU, SEGSIZESTU, 0);
+	id = shmget(STU_KEY, STU_SEGSIZE, 0);
 	if (id < 0) {
 		perror("Change: shmget failed 1");
 		exit(1);
@@ -50,11 +50,11 @@ int main(int argc, char* argv[]) {
 	// into the shared memory segment */
 	Wait(sema_set, 1);
 	printf("The value of sema_set = %d\n", sema_set);
-	strcpy(infoptr->fName, argv[1]);
-	strcpy(infoptr->lName, argv[2]);
+	strcpy(infoptr->Name, argv[1]);
+	//strcpy(infoptr->lName, argv[2]);
 	sleep(10);
 
-	strcpy(infoptr->telNumber, argv[3]);
+	strcpy(infoptr->Phone, argv[3]);
 	strcpy(infoptr->whoModified, (getpwuid(getuid()))->pw_name);
 	Signal(sema_set, 1);
 	exit(0);

@@ -6,20 +6,21 @@
 // So, I have opted to use 17438.
 
 // Students memory
-#define KEYSTU ((key_t)(17438))
-#define SEGSIZESTU sizeof(struct StudentInfo)
+#define STU_KEY ((key_t)(17438))
+#define STU_SEGSIZE sizeof(struct StudentInfo)
 
 // Read count memory
-#define KEYREAD ((key_t)(7438))
-#define SEGSIZEREAD sizeof(int)
+#define READS_KEY ((key_t)(7438))
+#define READS_SEGSIZE sizeof(int)
 
 #define NUM_SEMAPHS 2
 #define SEMA_KEY ((key_t)(438))
 
 struct StudentInfo{
-	char fName[20];
-	char lName[20];
-	char telNumber[15];
+	char Name[30];
+	char StuID[9];
+	char Phone[10];
+	char Address[50];
 	char whoModified[10];
 };
 
