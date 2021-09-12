@@ -1,8 +1,6 @@
 
-all: create change load query print cln
+all: change load query print cln
 
-create: create.c header.h
-	gcc -Wall -o create create.c header.c
 change: change.c header.h
 	gcc -Wall -o change change.c header.c
 load: load.c header.h
@@ -15,4 +13,4 @@ cln: clean.c header.h
 	gcc -Wall -o clean clean.c header.c
 
 clean:
-	rm -f create change load query print clean clean_output.txt *~ core
+	rm -f change load query print clean clean_output.txt *~ core
