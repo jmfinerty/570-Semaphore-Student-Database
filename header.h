@@ -1,6 +1,6 @@
 /* header.h */
 
-#define KEY ((key_t)(07438)) // changed to last five digits of my student ID
+#define KEY ((key_t)(107438)) // changed to last five digits of my student ID
 #define SEGSIZE	sizeof(struct StudentInfo)
 
 #define NUM_SEMAPHS 5
