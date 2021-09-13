@@ -14,15 +14,7 @@ int main(int argc, char *argv[]) {
         exit(3);
     }
 
-    // Prompt user for password to enable use
-    char password[50];
-    printf("PASSWORD: ");
-    fgets(password, 51, stdin);
-    password[strlen(password) - 1] = '\0';
-    if (strcmp(password, PASSWORD) != 0) {
-        printf("INCORRECT PASSWORD. ACCESS DENIED.\n");
-        exit(3);
-    }
+    GetAndCheckPassword();
 
     // Get shared memory segment IDs
     int stu_id       = shmget(STU_KEY, STU_SEGSIZE, IPC_CREAT|0666);

@@ -38,3 +38,19 @@ int GetSemaphs(key_t k, int n) {
 	}
 	return semid;
 }
+
+// prompts user for advisor access password
+// exits with code 3 if user enters incorrect password, else returns 1
+int GetAndCheckPassword() {
+	printf("PASSWORD: ");
+
+	char password[50];
+    fgets(password, 51, stdin);
+    password[strlen(password) - 1] = '\0';
+
+    if (strcmp(password, PASSWORD) != 0) {
+        printf("INCORRECT PASSWORD. ACCESS DENIED.\n");
+        exit(3);
+    }
+	return 1;
+}

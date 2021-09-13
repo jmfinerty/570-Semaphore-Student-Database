@@ -6,7 +6,7 @@
 // So, I have opted to use 17438.
 
 // Turn this to 0 to disable synchronicity testing sleeps
-#define ENABLE_TESTING_SLEEP 1
+#define ENABLE_TESTING_SLEEP 0
 #define TESTING_SLEEP_LENGTH 2 // time in seconds to sleep
 
 // Advisor password
@@ -33,3 +33,5 @@ struct StudentInfo {
 void Wait(int semaph, int n);
 void Signal(int semaph, int n);
 int GetSemaphs(key_t k, int n);
+
+int GetAndCheckPassword();
