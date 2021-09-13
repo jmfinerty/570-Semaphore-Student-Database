@@ -9,6 +9,7 @@
 int main(int argc, char *argv[]) {
 
     char password[50];
+    printf("PASSWORD: ");
     fgets(password, 51, stdin);
     password[strlen(password) - 1] = '\0';
     if (strcmp(password, PASSWORD) != 0) {
