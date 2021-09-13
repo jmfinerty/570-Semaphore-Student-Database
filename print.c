@@ -1,3 +1,9 @@
+/* print.c */
+
+/* Prints the contents of the shared memory to
+ screen with proper formatting. This helps in
+debugging your programs */
+
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>

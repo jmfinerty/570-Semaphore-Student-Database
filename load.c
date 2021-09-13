@@ -1,3 +1,9 @@
+/* Loads the database. It should create the necessary shared memory segments (you may need two
+segments, one to store the data and the other to store the value of the shared variable read count)
+as well as the needed number semaphores to synchronize concurrent access to shared memory (in fact
+two semaphores will be sufficient as we saw in class). Then, it should read the initial content of the
+database from a file and load it into the shared memory created for storing data */
+
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>

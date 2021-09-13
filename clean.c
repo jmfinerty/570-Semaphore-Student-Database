@@ -1,3 +1,10 @@
+/* clean.c */
+
+/* Lets a student advisor save the date stored in the shared memory to a file, in a format that is suitable
+for loading into memory later and also deletes the shared memory segments and the semaphores created
+for synchronization. The “Clean” program should prompt the user (advisor) to type in a password;
+the password is “000”. */
+
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>

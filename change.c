@@ -1,5 +1,10 @@
 /* change.c */
 
+/* Lets a student advisor change the data related to any student with the given Student ID. It also
+allows an advisor to add/delete records to/from the database. A student advisor is required to use a
+password to change the database. You can assume the password is “000”, for simplicity */
+
+
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
