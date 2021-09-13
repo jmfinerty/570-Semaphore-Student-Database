@@ -8,11 +8,13 @@
 
 int main(int argc, char *argv[]) {
 
+    // Check for correct usage
     if (argc != 1) {
         fprintf(stderr, "Usage: ./Clean\n");
         exit(3);
     }
 
+    // Prompt user for password to enable use
     char password[50];
     printf("PASSWORD: ");
     fgets(password, 51, stdin);
@@ -22,6 +24,7 @@ int main(int argc, char *argv[]) {
         exit(3);
     }
 
+    // Get shared memory segment IDs
     int stu_id       = shmget(STU_KEY, STU_SEGSIZE, IPC_CREAT|0666);
     int reads_id     = shmget(READS_KEY, READS_SEGSIZE, IPC_CREAT|0666);
     if (stu_id < 0 || reads_id < 0) {
@@ -29,6 +32,7 @@ int main(int argc, char *argv[]) {
 		exit(1);
 	}
 
+    // Attach shared memory segments
     struct StudentInfo* students = (struct StudentInfo *)shmat(stu_id, 0, 0);
     int* read_count  = (int *)shmat(reads_id, 0, 0);
     if (students <= (struct StudentInfo *) (0) || read_count < (int *)(1)) {
@@ -36,6 +40,7 @@ int main(int argc, char *argv[]) {
 		exit(2);
     }
 
+    // Get semaset identifier
     int semaset = semget(SEMA_KEY, 0, 0);
     if (semaset < 0) {
 		perror("CLEAN: semget failed");
@@ -47,8 +52,12 @@ int main(int argc, char *argv[]) {
     FILE* f = fopen("clean_output.txt", "w");
     if (f) {
         while (1) {
+
+            // Stop after all students have been checked
             if ((int)strlen(students->Name) == 0)
                 break;
+
+            // Write each student's entry out to file
             fputs(students->Name, f);
             fputs(students->StuID, f);
             fputs(students->Address, f);
@@ -65,8 +74,11 @@ int main(int argc, char *argv[]) {
         exit(3);
     }
 
+    // Detach shared memory segments
     shmdt((char*)students);
     shmdt((char*)read_count);
+
+    // Mark segments to be destroyed
     shmctl(stu_id, IPC_RMID, (struct shmid_ds*)0);
     shmctl(reads_id, IPC_RMID, (struct shmid_ds*)0);
 

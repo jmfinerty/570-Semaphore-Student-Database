@@ -10,6 +10,13 @@
 
 int main(int argc, char *argv[]) {
 
+    // Check for correct usage
+    if (argc != 2) {
+        fprintf(stderr, "Usage: ./Change <Student ID>\n");
+        exit(3);
+    }
+
+    // Prompt user for password to enable use
 	char password[50];
     printf("PASSWORD: ");
     fgets(password, 51, stdin);
@@ -19,11 +26,7 @@ int main(int argc, char *argv[]) {
         exit(3);
     }
 
-    if (argc != 2) {
-        fprintf(stderr, "Usage: ./Change <Student ID>\n");
-        exit(3);
-    }
-
+    // Get shared memory segment IDs
     int stu_id       = shmget(STU_KEY, STU_SEGSIZE, IPC_CREAT|0666);
     int reads_id     = shmget(READS_KEY, READS_SEGSIZE, IPC_CREAT|0666);
     if (stu_id < 0 || reads_id < 0) {
@@ -31,6 +34,7 @@ int main(int argc, char *argv[]) {
 		exit(1);
 	}
 
+    // Attach shared memory segments
     struct StudentInfo* students = (struct StudentInfo *)shmat(stu_id, 0, 0);
     int* read_count  = (int *)shmat(reads_id, 0, 0);
     if (students <= (struct StudentInfo *) (0) || read_count < (int *)(1)) {
@@ -38,6 +42,7 @@ int main(int argc, char *argv[]) {
 		exit(2);
     }
 
+    // Get semaset identifier
     int semaset = semget(SEMA_KEY, 0, 0);
     if (semaset < 0) {
 		perror("CHANGE: semget failed");
@@ -55,10 +60,15 @@ int main(int argc, char *argv[]) {
 
     int num_records_found = 0;
     while (1) {
+
+        // Stop after all students have been checked
 		if ((int)strlen(students->Name) == 0)
             break;
+
+        // Check for students with ID matching query
         if (strcmp(query, students->StuID) == 0) {
 
+            // Print unmodified student record
 			printf("CURRENT STUDENT RECORD\n");
             printf("Name:       %s\n", students->Name);
             printf("Student ID: %s\n", students->StuID);
@@ -71,32 +81,33 @@ int main(int argc, char *argv[]) {
 				printf("\t1. Student Name\n\t2. Student ID\n\t3. Address\n\t4. Phone\n\t0. EXIT\n");
 				printf("Choice: ");
 
+                // Get user's choice for which field to modify
 				char buf[1];
 				fgets(buf, 3, stdin);
 				choice = atoi(buf);
 
 				switch (choice) {
-					case 1:
+					case 1: // 1. Student Name
 						printf("New name: 		");
 						fgets(students->Name, 51, stdin);
 						students->Name[strlen(students->Name) - 1] = '\0';
 						break;
-					case 2:
+					case 2: // 2. Student ID
 						printf("New Student ID:	");
 						fgets(students->StuID, 26, stdin);
 						students->StuID[strlen(students->StuID) - 1] = '\0';
 						break;
-					case 3:
+					case 3: // 3. Address
 						printf("New Address: 	");
 						fgets(students->Address, 76, stdin);
 						students->Address[strlen(students->Address) - 1] = '\0';
 						break;
-					case 4:
+					case 4: // 4. Phone
 						printf("New Phone: 		");
 						fgets(students->Phone, 26, stdin);
 						students->Phone[strlen(students->Phone) - 1] = '\0';
 						break;
-					case 0:
+					case 0: // 0. Exit
 						exit(3);
 					default:
 						printf("Invalid selection.");

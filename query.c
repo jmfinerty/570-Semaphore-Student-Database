@@ -8,11 +8,13 @@
 
 int main(int argc, char *argv[]) {
 
+    // Check for correct usage
     if (argc != 2) {
         fprintf(stderr, "Usage: ./Query <Student ID>\n");
         exit(3);
     }
 
+    // Get shared memory segment IDs
     int stu_id       = shmget(STU_KEY, STU_SEGSIZE, IPC_CREAT|0666);
     int reads_id     = shmget(READS_KEY, READS_SEGSIZE, IPC_CREAT|0666);
     if (stu_id < 0 || reads_id < 0) {
@@ -20,6 +22,7 @@ int main(int argc, char *argv[]) {
 		exit(1);
 	}
 
+    // Attach shared memory segments
     struct StudentInfo* students = (struct StudentInfo *)shmat(stu_id, 0, 0);
     int* read_count  = (int *)shmat(reads_id, 0, 0);
     if (students <= (struct StudentInfo *) (0) || read_count < (int *)(1)) {
@@ -27,6 +30,7 @@ int main(int argc, char *argv[]) {
 		exit(2);
     }
 
+    // Get semaset identifier
     int semaset = semget(SEMA_KEY, 0, 0);
     if (semaset < 0) {
 		perror("QUERY: semget failed");
@@ -42,9 +46,12 @@ int main(int argc, char *argv[]) {
     }
     Signal(semaset, 1);
 
+    // Check each student record for a matching ID
     int num_records_found = 0;
     while (1) {
+
         if (strcmp(query, students->StuID) == 0) {
+            // When a matching ID is found, print that student's record
             printf("Name:       %s\n", students->Name);
             printf("Student ID: %s\n", students->StuID);
             printf("Address:    %s\n", students->Address);
@@ -52,8 +59,11 @@ int main(int argc, char *argv[]) {
             num_records_found++;
         }
         students++;
+
+        // Stop after last student has been read
         if ((int)strlen(students->Name) == 0)
             break;
+
         if (ENABLE_TESTING_SLEEP) {
             sleep(TESTING_SLEEP_LENGTH);
         }
