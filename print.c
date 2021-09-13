@@ -9,27 +9,27 @@
 int main(int argc, char *argv[]) {
 
     if (argc != 1) {
-        fprintf(stderr, "Usage: ./print\n");
+        fprintf(stderr, "Usage: ./Print\n");
         exit(3);
     }
 
     int stu_id       = shmget(STU_KEY, STU_SEGSIZE, IPC_CREAT|0666);
     int reads_id     = shmget(READS_KEY, READS_SEGSIZE, IPC_CREAT|0666);
     if (stu_id < 0 || reads_id < 0) {
-		perror("Load: shmget failed");
+		perror("PRINT: shmget failed");
 		exit(1);
 	}
 
-    struct StudentInfo* student = (struct StudentInfo *)shmat(stu_id, 0, 0);
+    struct StudentInfo* students = (struct StudentInfo *)shmat(stu_id, 0, 0);
     int* read_count  = (int *)shmat(reads_id, 0, 0);
-    if (student <= (struct StudentInfo *) (0) || read_count < (int *)(1)) {
-		perror("Load: shmat failed");
+    if (students <= (struct StudentInfo *) (0) || read_count < (int *)(1)) {
+		perror("PRINT: shmat failed");
 		exit(2);
     }
 
     int semaset = GetSemaphs(SEMA_KEY, NUM_SEMAPHS);
     if (semaset < 0) {
-		perror("Load: semget failed");
+		perror("PRINT: semget failed");
 		exit(2);
 	}
 
@@ -41,14 +41,14 @@ int main(int argc, char *argv[]) {
     Signal(semaset, 1);
 
     while (1) {
-        if ((int)strlen(student->Name) == 0)
+        if ((int)strlen(students->Name) == 0)
             break;
-        printf("Name:       %s\n", student->Name);
-        printf("Student ID: %s\n", student->StuID);
-        printf("Address:    %s\n", student->Address);
-        printf("Phone:      %s\n", student->Phone);
-        student++;
-        if ((int)strlen(student->Name) != 0)
+        printf("Name:       %s\n", students->Name);
+        printf("Student ID: %s\n", students->StuID);
+        printf("Address:    %s\n", students->Address);
+        printf("Phone:      %s\n", students->Phone);
+        students++;
+        if ((int)strlen(students->Name) != 0)
             printf("--------------------------------------------------\n");
 
         if (ENABLE_TESTING_SLEEP) {

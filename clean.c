@@ -8,6 +8,11 @@
 
 int main(int argc, char *argv[]) {
 
+    if (argc != 1) {
+        fprintf(stderr, "Usage: ./Clean\n");
+        exit(3);
+    }
+
     char password[50];
     printf("PASSWORD: ");
     fgets(password, 51, stdin);
@@ -20,20 +25,20 @@ int main(int argc, char *argv[]) {
     int stu_id       = shmget(STU_KEY, STU_SEGSIZE, IPC_CREAT|0666);
     int reads_id     = shmget(READS_KEY, READS_SEGSIZE, IPC_CREAT|0666);
     if (stu_id < 0 || reads_id < 0) {
-		perror("Clean: shmget failed");
+		perror("CLEAN: shmget failed");
 		exit(1);
 	}
 
-    struct StudentInfo* student = (struct StudentInfo *)shmat(stu_id, 0, 0);
+    struct StudentInfo* students = (struct StudentInfo *)shmat(stu_id, 0, 0);
     int* read_count  = (int *)shmat(reads_id, 0, 0);
-    if (student <= (struct StudentInfo *) (0) || read_count < (int *)(1)) {
-		perror("Clean: shmat failed");
+    if (students <= (struct StudentInfo *) (0) || read_count < (int *)(1)) {
+		perror("CLEAN: shmat failed");
 		exit(2);
     }
 
     int semaset = semget(SEMA_KEY, 0, 0);
     if (semaset < 0) {
-		perror("Clean: semget failed");
+		perror("CLEAN: semget failed");
 		exit(2);
 	}
 
@@ -42,25 +47,25 @@ int main(int argc, char *argv[]) {
     FILE* f = fopen("clean_output.txt", "w");
     if (f) {
         while (1) {
-            if ((int)strlen(student->Name) == 0)
+            if ((int)strlen(students->Name) == 0)
                 break;
-            fputs(student->Name, f);
-            fputs(student->StuID, f);
-            fputs(student->Address, f);
-            fputs(student->Phone, f);
-            printf("Wrote out: %s\n", student->Name);
-            student++;
+            fputs(students->Name, f);
+            fputs(students->StuID, f);
+            fputs(students->Address, f);
+            fputs(students->Phone, f);
+            printf("Wrote out: %s\n", students->Name);
+            students++;
 
             if (ENABLE_TESTING_SLEEP) {
                 sleep(TESTING_SLEEP_LENGTH);
             }
         }
     } else {
-        perror("Load: Error reading file.");
+        perror("CLEAN: Error reading file.");
         exit(3);
     }
 
-    shmdt((char*)student);
+    shmdt((char*)students);
     shmdt((char*)read_count);
     shmctl(stu_id, IPC_RMID, (struct shmid_ds*)0);
     shmctl(reads_id, IPC_RMID, (struct shmid_ds*)0);

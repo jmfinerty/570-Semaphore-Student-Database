@@ -9,27 +9,27 @@
 int main(int argc, char *argv[]) {
 
     if (argc != 2) {
-        fprintf(stderr, "Usage: ./query <Student ID>\n");
+        fprintf(stderr, "Usage: ./Query <Student ID>\n");
         exit(3);
     }
 
     int stu_id       = shmget(STU_KEY, STU_SEGSIZE, IPC_CREAT|0666);
     int reads_id     = shmget(READS_KEY, READS_SEGSIZE, IPC_CREAT|0666);
     if (stu_id < 0 || reads_id < 0) {
-		perror("Query: shmget failed");
+		perror("QUERY: shmget failed");
 		exit(1);
 	}
 
-    struct StudentInfo* student = (struct StudentInfo *)shmat(stu_id, 0, 0);
+    struct StudentInfo* students = (struct StudentInfo *)shmat(stu_id, 0, 0);
     int* read_count  = (int *)shmat(reads_id, 0, 0);
-    if (student <= (struct StudentInfo *) (0) || read_count < (int *)(1)) {
-		perror("Query: shmat failed");
+    if (students <= (struct StudentInfo *) (0) || read_count < (int *)(1)) {
+		perror("QUERY: shmat failed");
 		exit(2);
     }
 
     int semaset = semget(SEMA_KEY, 0, 0);
     if (semaset < 0) {
-		perror("Query: semget failed");
+		perror("QUERY: semget failed");
 		exit(2);
 	}
 
@@ -44,15 +44,15 @@ int main(int argc, char *argv[]) {
 
     int num_records_found = 0;
     while (1) {
-        if (strcmp(query, student->StuID) == 0) {
-            printf("Name:       %s\n", student->Name);
-            printf("Student ID: %s\n", student->StuID);
-            printf("Address:    %s\n", student->Address);
-            printf("Phone:      %s\n", student->Phone);
+        if (strcmp(query, students->StuID) == 0) {
+            printf("Name:       %s\n", students->Name);
+            printf("Student ID: %s\n", students->StuID);
+            printf("Address:    %s\n", students->Address);
+            printf("Phone:      %s\n", students->Phone);
             num_records_found++;
         }
-        student++;
-        if ((int)strlen(student->Name) == 0)
+        students++;
+        if ((int)strlen(students->Name) == 0)
             break;
         if (ENABLE_TESTING_SLEEP) {
             sleep(TESTING_SLEEP_LENGTH);
@@ -60,7 +60,7 @@ int main(int argc, char *argv[]) {
     }
 
     if (num_records_found == 0) {
-        printf("No student with this ID found in the database.\n");
+        printf("No students with this ID found in the database.\n");
     }
 
     Wait(semaset, 1);
