@@ -54,6 +54,9 @@ int main(int argc, char *argv[]) {
         student++;
         if ((int)strlen(student->Name) == 0)
             break;
+        if (ENABLE_TESTING_SLEEP) {
+            sleep(TESTING_SLEEP_LENGTH);
+        }
     }
 
     if (num_records_found == 0) {

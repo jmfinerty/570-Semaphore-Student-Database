@@ -5,6 +5,10 @@
 //  error: invalid digit "8" in octal constant
 // So, I have opted to use 17438.
 
+// Turn this to 0 to disable synchronicity testing sleeps
+#define ENABLE_TESTING_SLEEP 1
+#define TESTING_SLEEP_LENGTH 2 // time in seconds to sleep
+
 // Advisor password
 #define PASSWORD "000"
 

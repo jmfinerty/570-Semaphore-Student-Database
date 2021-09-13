@@ -50,6 +50,10 @@ int main(int argc, char *argv[]) {
         student++;
         if ((int)strlen(student->Name) != 0)
             printf("--------------------------------------------------\n");
+
+        if (ENABLE_TESTING_SLEEP) {
+            sleep(TESTING_SLEEP_LENGTH);
+        }
     }
 
     Wait(semaset, 1);

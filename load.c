@@ -53,6 +53,11 @@ int main(int argc, char *argv[]) {
             student->Phone[strlen(student->Phone) - 1] = '\0';
 
             printf("Loaded: %s\n", student->Name);
+
+            if (ENABLE_TESTING_SLEEP) {
+                sleep(TESTING_SLEEP_LENGTH);
+            }
+
             student++;
         }
 

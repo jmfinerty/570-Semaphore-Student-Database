@@ -48,7 +48,12 @@ int main(int argc, char *argv[]) {
             fputs(student->StuID, f);
             fputs(student->Address, f);
             fputs(student->Phone, f);
+            printf("Wrote out: %s\n", student->Name);
             student++;
+
+            if (ENABLE_TESTING_SLEEP) {
+                sleep(TESTING_SLEEP_LENGTH);
+            }
         }
     } else {
         perror("Load: Error reading file.");
