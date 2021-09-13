@@ -2,7 +2,7 @@
 
 /* Lets anyone query the database. Anyone should be
 able to retrieve the record of any student by
-typing in the student’s ID. /*
+typing in the student’s ID. */
 
 #include <stdlib.h>
 #include <stdio.h>
