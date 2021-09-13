@@ -4,7 +4,6 @@
 allows an advisor to add/delete records to/from the database. A student advisor is required to use a
 password to change the database. You can assume the password is “000”, for simplicity */
 
-
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
@@ -16,6 +15,9 @@ password to change the database. You can assume the password is “000”, for s
 int main(int argc, char *argv[]) {
 
     // Check for correct usage
+    // Even if the user only wishes to add a new student,
+    // an ID must be provided. This is for programatic simplicity,
+    // however this ID will be used for the new record as well.
     if (argc != 2) {
         fprintf(stderr, "Usage: ./Change <Student ID>\n");
         fprintf(stderr, "If you wish to add a new student, use the new student's Student ID.\n");
@@ -27,7 +29,7 @@ int main(int argc, char *argv[]) {
     // Get shared memory segment IDs
     int stu_id       = shmget(STU_KEY, STU_SEGSIZE, IPC_CREAT|0666);
     int reads_id     = shmget(READS_KEY, READS_SEGSIZE, IPC_CREAT|0666);
-    if (stu_id < 0 || reads_id < 0) {
+    if (stu_id < 0 || reads_id < 0) { // return value -1 indicates an error, see man: https://man7.org/linux/man-pages/man2/shmget.2.html
 		perror("CHANGE: shmget failed");
 		exit(1);
 	}
@@ -35,18 +37,19 @@ int main(int argc, char *argv[]) {
     // Attach shared memory segments
     struct StudentInfo* students = (struct StudentInfo *)shmat(stu_id, 0, 0);
     int* read_count  = (int *)shmat(reads_id, 0, 0);
-    if (students <= (struct StudentInfo *) (0) || read_count < (int *)(1)) {
+    if (students <= (struct StudentInfo *) (0) || read_count < (int *)(1)) { // return value -1 indicates an error, see man: https://man7.org/linux/man-pages/man3/shmat.3p.html
 		perror("CHANGE: shmat failed");
 		exit(2);
     }
 
     // Get semaset identifier
     int semaset = semget(SEMA_KEY, 0, 0);
-    if (semaset < 0) {
+    if (semaset < 0) { // return value -1 indicates an error, see man: https://man7.org/linux/man-pages/man2/semget.2.html
 		perror("CHANGE: semget failed");
 		exit(2);
 	}
 
+    // Student ID from arguments
     char* query = argv[1];
 
     Wait(semaset, 1);
@@ -107,9 +110,9 @@ int main(int argc, char *argv[]) {
 						break;
                     case 9: // 9. Delete
                         while (1) {
-                            struct StudentInfo* currentStudent = students;      // Save location of this students fields
-                            students++;                                         // Move on to next student
-                            strcpy(currentStudent->Name, students->Name);       // Copy next student over previous student
+                            struct StudentInfo* currentStudent = students;      // Save location of this students fields.
+                            students++;                                         // Move on to next student.
+                            strcpy(currentStudent->Name, students->Name);       // Copy next student over previous student.
                             strcpy(currentStudent->StuID, students->StuID);
                             strcpy(currentStudent->Address, students->Address);
                             strcpy(currentStudent->Phone, students->Phone);

@@ -1,4 +1,8 @@
 /* header.c */
+
+/* This file, with the exception of GetAndCheckPassword(),
+   was provided as sample code for the assignment, and is otherwise unmodified. */
+
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
@@ -46,7 +50,7 @@ int GetAndCheckPassword() {
 
 	char password[50];
     fgets(password, 51, stdin);
-    password[strlen(password) - 1] = '\0';
+    password[strlen(password) - 1] = '\0'; // trim newline
 
     if (strcmp(password, PASSWORD) != 0) {
         printf("INCORRECT PASSWORD. ACCESS DENIED.\n");

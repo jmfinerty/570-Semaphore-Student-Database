@@ -26,7 +26,7 @@ int main(int argc, char *argv[]) {
     // Get shared memory segment IDs
     int stu_id       = shmget(STU_KEY, STU_SEGSIZE, IPC_CREAT|0666);
     int reads_id     = shmget(READS_KEY, READS_SEGSIZE, IPC_CREAT|0666);
-    if (stu_id < 0 || reads_id < 0) {
+    if (stu_id < 0 || reads_id < 0) { // return value -1 indicates an error, see man: https://man7.org/linux/man-pages/man2/shmget.2.html
 		perror("CLEAN: shmget failed");
 		exit(1);
 	}
@@ -34,14 +34,14 @@ int main(int argc, char *argv[]) {
     // Attach shared memory segments
     struct StudentInfo* students = (struct StudentInfo *)shmat(stu_id, 0, 0);
     int* read_count  = (int *)shmat(reads_id, 0, 0);
-    if (students <= (struct StudentInfo *) (0) || read_count < (int *)(1)) {
+    if (students <= (struct StudentInfo *) (0) || read_count < (int *)(1)) {  // return value -1 indicates an error, see man: https://man7.org/linux/man-pages/man3/shmat.3p.html
 		perror("CLEAN: shmat failed");
 		exit(2);
     }
 
     // Get semaset identifier
     int semaset = semget(SEMA_KEY, 0, 0);
-    if (semaset < 0) {
+    if (semaset < 0) { // return value -1 indicates an error, see man: https://man7.org/linux/man-pages/man2/semget.2.html
 		perror("CLEAN: semget failed");
 		exit(2);
 	}
