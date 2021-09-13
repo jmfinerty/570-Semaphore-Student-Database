@@ -15,7 +15,7 @@ int main(int argc, char *argv[]) {
         fprintf(stderr, "Usage: ./Change <Student ID>\n");
         exit(3);
     }
-	
+
     GetAndCheckPassword();
 
     // Get shared memory segment IDs
