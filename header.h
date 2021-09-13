@@ -5,6 +5,9 @@
 //  error: invalid digit "8" in octal constant
 // So, I have opted to use 17438.
 
+// Advisor password
+#define PASSWORD "000"
+
 // Students memory
 #define STU_KEY ((key_t)(17438))
 #define STU_SEGSIZE sizeof(struct StudentInfo)

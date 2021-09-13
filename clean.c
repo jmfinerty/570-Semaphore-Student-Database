@@ -8,6 +8,14 @@
 
 int main(int argc, char *argv[]) {
 
+    char password[50];
+    fgets(password, 51, stdin);
+    password[strlen(password) - 1] = '\0';
+    if (strcmp(password, PASSWORD) != 0) {
+        printf("INCORRECT PASSWORD. ACCESS DENIED.\n");
+        exit(3);
+    }
+
     int stu_id       = shmget(STU_KEY, STU_SEGSIZE, IPC_CREAT|0666);
     int reads_id     = shmget(READS_KEY, READS_SEGSIZE, IPC_CREAT|0666);
     if (stu_id < 0 || reads_id < 0) {

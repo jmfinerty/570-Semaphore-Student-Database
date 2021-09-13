@@ -10,6 +10,14 @@
 
 int main(int argc, char *argv[]) {
 
+	char password[50];
+    fgets(password, 51, stdin);
+    password[strlen(password) - 1] = '\0';
+    if (strcmp(password, PASSWORD) != 0) {
+        printf("INCORRECT PASSWORD. ACCESS DENIED.\n");
+        exit(3);
+    }
+
     if (argc != 2) {
         fprintf(stderr, "Usage: ./Change <Student ID>\n");
         exit(3);
