@@ -3,60 +3,113 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
-#include <sys/types.h>
-#include <sys/ipc.h>
-#include <sys/shm.h>
-#include <sys/stat.h>
 #include <unistd.h>
+#include <sys/shm.h>
 #include <sys/sem.h>
-#include <pwd.h>
 #include "header.h"
 
-int main(int argc, char* argv[]) {
+int main(int argc, char *argv[]) {
 
-	int id;
-	struct StudentInfo *infoptr;
-	int sema_set;
+    if (argc != 2) {
+        fprintf(stderr, "Usage: ./Change <Student ID>\n");
+        exit(3);
+    }
 
-	if (argc != 4) {
-		fprintf(stderr, "Usage: change <first name> <last name> <phone number>\n");
-		exit(3);
-	}
-
-	// get the id of the shared memory segment with key "KEY"
-	// note that this is the segment, created in the program "create",
-	// where the data is stored
-	id = shmget(STU_KEY, STU_SEGSIZE, 0);
-	if (id < 0) {
-		perror("Change: shmget failed 1");
+    int stu_id       = shmget(STU_KEY, STU_SEGSIZE, IPC_CREAT|0666);
+    int reads_id     = shmget(READS_KEY, READS_SEGSIZE, IPC_CREAT|0666);
+    if (stu_id < 0 || reads_id < 0) {
+		perror("Query: shmget failed");
 		exit(1);
 	}
 
-	// attach the already created shared memory segment to the process's
-	// address space and make infoptr point to the begining of the
-	// shared memory segment so the shared memory segment can be
-	// accessed through 'inforptr'
-	infoptr = (struct StudentInfo *)shmat(id, 0, 0);
-	if (infoptr <= (struct StudentInfo *) (0)) {
-		perror("Change: shmat failed");
+    struct StudentInfo* student = (struct StudentInfo *)shmat(stu_id, 0, 0);
+    int* read_count  = (int *)shmat(reads_id, 0, 0);
+    if (student <= (struct StudentInfo *) (0) || read_count < (int *)(1)) {
+		perror("Query: shmat failed");
+		exit(2);
+    }
+
+    int semaset = semget(SEMA_KEY, 0, 0);
+    if (semaset < 0) {
+		perror("Query: semget failed");
 		exit(2);
 	}
 
-	// get the id of the semaphore set associated with SEMA_KEY, created by the
-	// "create" process
-	sema_set=semget(SEMA_KEY, 0, 0);
+    char* query = argv[1];
 
-	// Load new data (obtained as commandline arguments)
-	// into the shared memory segment */
-	Wait(sema_set, 1);
-	printf("The value of sema_set = %d\n", sema_set);
-	strcpy(infoptr->Name, argv[1]);
-	//strcpy(infoptr->lName, argv[2]);
-	sleep(10);
+    Wait(semaset, 1);
+    *read_count += 1;
+    if (*read_count == 1) {
+        Wait(semaset, 0);
+    }
+    Signal(semaset, 1);
 
-	strcpy(infoptr->Phone, argv[3]);
-	strcpy(infoptr->whoModified, (getpwuid(getuid()))->pw_name);
-	Signal(sema_set, 1);
-	exit(0);
+    int num_records_found = 0;
+    while (1) {
+		if ((int)strlen(student->Name) == 0)
+            break;
+        if (strcmp(query, student->StuID) == 0) {
+
+			printf("CURRENT STUDENT RECORD\n");
+            printf("Name:       %s\n", student->Name);
+            printf("Student ID: %s\n", student->StuID);
+            printf("Address:    %s\n", student->Address);
+            printf("Phone:      %s\n", student->Phone);
+
+			int choice = -1;
+			while (choice != 0) {
+				printf("\nSelect a value to change.\n");
+				printf("\t1. Student Name\n\t2. Student ID\n\t3. Address\n\t4. Phone\n\t0. EXIT\n");
+				printf("Choice: ");
+
+				char buf[1];
+				fgets(buf, 3, stdin);
+				choice = atoi(buf);
+
+				switch (choice) {
+					case 1:
+						printf("New name: 		");
+						fgets(student->Name, 51, stdin);
+						student->Name[strlen(student->Name) - 1] = '\0';
+						break;
+					case 2:
+						printf("New Student ID:	");
+						fgets(student->StuID, 26, stdin);
+						student->StuID[strlen(student->StuID) - 1] = '\0';
+						break;
+					case 3:
+						printf("New Address: 	");
+						fgets(student->Address, 76, stdin);
+						student->Address[strlen(student->Address) - 1] = '\0';
+						break;
+					case 4:
+						printf("New Phone: 		");
+						fgets(student->Phone, 26, stdin);
+						student->Phone[strlen(student->Phone) - 1] = '\0';
+						break;
+					case 0:
+						exit(3);
+					default:
+						printf("Invalid selection.");
+						break;
+				}
+			}
+            num_records_found++;
+        }
+        student++;
+    }
+
+    if (num_records_found == 0) {
+        printf("No student with this ID found in the database.\n");
+    }
+
+    Wait(semaset, 1);
+    *read_count -= 1;
+    if (*read_count == 0) {
+        Signal(semaset, 0);
+    }
+    Signal(semaset, 1);
+
+    return 0;
 
 }
