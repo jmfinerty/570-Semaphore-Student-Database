@@ -1,3 +1,5 @@
+/* load.c */
+
 /* Loads the database. It should create the necessary shared memory segments (you may need two
 segments, one to store the data and the other to store the value of the shared variable read count)
 as well as the needed number semaphores to synchronize concurrent access to shared memory (in fact
