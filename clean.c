@@ -59,9 +59,13 @@ int main(int argc, char *argv[]) {
 
             // Write each student's entry out to file
             fputs(students->Name, f);
+            fputs("\n", f);
             fputs(students->StuID, f);
+            fputs("\n", f);
             fputs(students->Address, f);
+            fputs("\n", f);
             fputs(students->Phone, f);
+            fputs("\n", f);
             printf("Wrote out: %s\n", students->Name);
             students++;
 
