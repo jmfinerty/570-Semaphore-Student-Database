@@ -18,6 +18,7 @@ int main(int argc, char *argv[]) {
     // Check for correct usage
     if (argc != 2) {
         fprintf(stderr, "Usage: ./Change <Student ID>\n");
+        fprintf(stderr, "If you wish to add a new student, use the new student's Student ID.\n");
         exit(3);
     }
 
@@ -74,8 +75,8 @@ int main(int argc, char *argv[]) {
 
 			int choice = -1;
 			while (choice != 0) {
-				printf("\nSelect a value to change.\n");
-				printf("\t1. Student Name\n\t2. Student ID\n\t3. Address\n\t4. Phone\n\t0. EXIT\n");
+				printf("\nSelect one of the following fields to modify.\n");
+				printf("\t1. Student Name\n\t2. Student ID\n\t3. Address\n\t4. Phone\n\t9. DELETE STUDENT\n\t0. EXIT\n");
 				printf("Choice: ");
 
                 // Get user's choice for which field to modify
@@ -104,8 +105,25 @@ int main(int argc, char *argv[]) {
 						fgets(students->Phone, 26, stdin);
 						students->Phone[strlen(students->Phone) - 1] = '\0';
 						break;
+                    case 9: // 9. Delete
+                        while (1) {
+                            struct StudentInfo* currentStudent = students;      // Save location of this students fields
+                            students++;                                         // Move on to next student
+                            strcpy(currentStudent->Name, students->Name);       // Copy next student over previous student
+                            strcpy(currentStudent->StuID, students->StuID);
+                            strcpy(currentStudent->Address, students->Address);
+                            strcpy(currentStudent->Phone, students->Phone);
+
+                            // When end of students is reached, the final student will
+                            // be overwritten by empty strings, since that is what the
+                            // student entry after them comprises. So, exit then.
+                            if ((int)strlen(students->Name) == 0) {
+                                printf("Student record deleted.");
+                                exit(0);
+                            }
+                        }
 					case 0: // 0. Exit
-						exit(3);
+						exit(0);
 					default:
 						printf("Invalid selection.");
 						break;
@@ -116,8 +134,34 @@ int main(int argc, char *argv[]) {
         students++;
     }
 
+    // If no record was found, the user can enter a new record using the queried ID.
+    // Note that we are already at the end of "students" from the above while loop,
+    // and so we can just add to the fields in the position we are at.
     if (num_records_found == 0) {
-        printf("No students with this ID found in the database.\n");
+        printf("No students with this ID found in the database. Add new student? (y/n): ");
+        char str[10];
+        fgets(str, 10, stdin);
+        str[strlen(str) - 1] = '\0';
+
+        if (strcmp(str, "y") == 0) {
+
+            // copy student id from query
+            strcpy(students->StuID, argv[1]);
+
+            // get input for other fields
+            printf("Name: 		");
+            fgets(students->Name, 51, stdin);
+            printf("Address: 	");
+            fgets(students->Address, 76, stdin);
+            printf("Phone: 		");
+            fgets(students->Phone, 26, stdin);
+
+            // trim newlines from fgets inputs
+            students->Phone[strlen(students->Phone) - 1] = '\0';
+            students->Name[strlen(students->Name) - 1] = '\0';
+            students->Address[strlen(students->Address) - 1] = '\0';
+
+        }
     }
 
     Wait(semaset, 1);
